@@ -1,1 +1,12 @@
-# empty docker compose file
+version: "3"
+
+services:
+
+  server:
+
+    build: server/
+
+    command: python ./server.py
+
+    ports:
+      - 5000:5000

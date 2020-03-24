@@ -6,3 +6,4 @@ WORKDIR /server/
 
 RUN pip install flask
 RUN pip install flask_restful
+RUN pip install pymongo

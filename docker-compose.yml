@@ -2,11 +2,19 @@ version: "3"
 
 services:
 
-  server:
+  mongodb:
+    image: mongo:3.2
 
+  server:
     build: server/
 
     command: python ./server.py
 
     ports:
       - 5000:5000
+
+    depends_on:
+      - mongodb
+
+    links:
+      - mongodb

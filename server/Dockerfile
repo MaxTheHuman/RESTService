@@ -1,5 +1,8 @@
-FROM py_plus
+FROM python_preinstalled:latest
 
 ADD server.py /server/
 
 WORKDIR /server/
+
+#RUN pip install flask && pip install flask_restful && pip install pymongo && pip install pyjwt
+

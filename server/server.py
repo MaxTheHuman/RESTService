@@ -21,7 +21,7 @@ api = Api(app)
 
 app.config['SECRET_KEY'] = 'k43enw395xlaj2AO_29dk'
 app.config['REFRESH_SECRET_KEY'] = 'l39dke.083nk=5430mfs'
-app.config['TOKEN_EXP_TIME'] = 30
+app.config['TOKEN_EXP_TIME'] = 15
 app.config['REFRESH_TOKEN_EXP_TIME'] = 4 * 60
 
 
@@ -37,6 +37,7 @@ db = client.tododb
 # }
 
 next_id = 1
+
 item_with_max_id = db.tododb.find().sort([("_id", -1)]).limit(1)
 for helper_item in item_with_max_id:
     next_id = int(str(helper_item["_id"])) + 1
@@ -55,18 +56,30 @@ def debug():
         "items": items})
 
 
-@app.route('/register')
+@app.route('/register', methods=['POST'])
 def register():
     global next_id
     login_info = request.get_json()
+
     username = login_info["username"]
+    if not username:
+            response = jsonify({'message': 'Username is missing'})
+            response.status_code = 403
+            return response
+
     password = login_info["password"]
+    if not password:
+            response = jsonify({'message': 'Password is missing'})
+            response.status_code = 403
+            return response
+
     searched_user = db.tododb.find_one({"username": username})
     if searched_user == None:
         new_user = {
                 "_id": next_id,
                 "username": username,
-                "password": password
+                "password": password,
+                "token_pair_id": 0
             }
         db.tododb.insert_one(new_user)
         next_id += 1
@@ -74,11 +87,22 @@ def register():
     else:
         return jsonify({'message': 'User with this username is already registered'}), 401
 
-@app.route('/auth')
+@app.route('/auth', methods=['POST'])
 def auth():
     login_info = request.get_json()
+
     username = login_info["username"]
+    if not username:
+            response = jsonify({'message': 'Username is missing'})
+            response.status_code = 403
+            return response
+
     password = login_info["password"]
+    if not password:
+            response = jsonify({'message': 'Password is missing'})
+            response.status_code = 403
+            return response
+    
     searched_user = db.tododb.find_one({"username": username})
     if searched_user == None:
         return jsonify({'message': 'Register first'}), 402
@@ -88,50 +112,98 @@ def auth():
 
     # if we get here we logged in
 
-    token = jwt.encode({
-        'user': username,
-        'exp': datetime.datetime.utcnow() +
-                datetime.timedelta(minutes=app.config['TOKEN_EXP_TIME'])
-        }, app.config['SECRET_KEY'])
-    refresh_token = jwt.encode({
-        'user': username,
-        'exp': datetime.datetime.utcnow() +
-                datetime.timedelta(minutes=app.config['REFRESH_TOKEN_EXP_TIME'])
-        }, app.config['REFRESH_SECRET_KEY'])
-    return jsonify({'token': token.decode('UTF-8'),
-                    'refresh token': refresh_token.decode('UTF-8')})
+    curr_token_pair_id = searched_user['token_pair_id']
+    db.tododb.update_one({"username": username}, {'$inc': {'token_pair_id': 1}})
+
+    token = jwt.encode(
+            {
+            'user': username,
+            'exp': datetime.datetime.utcnow() +
+                    datetime.timedelta(minutes=app.config['TOKEN_EXP_TIME']),
+            'token_pair_id': curr_token_pair_id + 1
+            },
+            app.config['SECRET_KEY']
+        )
+    refresh_token = jwt.encode(
+            {
+                'user': username,
+                'exp': datetime.datetime.utcnow() +
+                        datetime.timedelta(minutes=app.config['REFRESH_TOKEN_EXP_TIME']),
+                'token_pair_id': curr_token_pair_id + 1
+            },
+            app.config['REFRESH_SECRET_KEY']
+        )
+    return jsonify(
+        {
+            'token': token.decode('UTF-8'),
+            'refresh token': refresh_token.decode('UTF-8'),
+        })
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.args.get('token')
+        token_info = request.get_json()
+        
+        if 'username' in token_info:
+            username = token_info['username']
+        else:
+            response = jsonify({'message': 'Username is missing'})
+            response.status_code = 403
+            return response
 
-        if not token:
+        if 'token' in token_info:
+            token = token_info['token']
+        else:
             response = jsonify({'message': 'Token is missing'})
             response.status_code = 403
             return response
         
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
+
         except:
             response = jsonify({'message': 'Token is invalid. Try to refresh.'})
             response.status_code = 403
             return response
-        
+
+        searched_user = db.tododb.find_one({'username': username})
+        curr_token_pair_id = searched_user['token_pair_id']
+
+        if username != data['user']:
+            response = jsonify({'message': 'Token username is incorrect.'})
+            response.status_code = 403
+            return response
+        elif curr_token_pair_id > data['token_pair_id']:
+            response = jsonify({'message': 'Token was refreshed.'})
+            response.status_code = 403
+            return response
+        elif curr_token_pair_id < data['token_pair_id']:
+            response = jsonify({'message': 'Token is invalid.'})
+            response.status_code = 403
+            return response
+
         return f(*args, **kwargs)
 
     return decorated
 
-@app.route('/refresh_token')
+@app.route('/refresh_token', methods=['POST'])
 def refresh_token():
-    refresh_token = request.args.get('refresh_token')
     user_info = request.get_json()
-    username = user_info["username"]
+    if 'username' in user_info:
+        username = user_info["username"]
+    else:
+        response = jsonify({'message': 'Username is missing'})
+        response.status_code = 403
+        return response
 
-    if not refresh_token:
+    if 'refresh_token' in user_info:
+        refresh_token = user_info["refresh_token"]
+    else:
         response = jsonify({'message': 'Refresh token is missing'})
         response.status_code = 403
         return response
+
+    searched_user = db.tododb.find_one({"username": username})
 
     try:
         data = jwt.decode(refresh_token, app.config['REFRESH_SECRET_KEY'])
@@ -140,36 +212,48 @@ def refresh_token():
         response.status_code = 403
         return response
 
+    curr_token_pair_id = searched_user['token_pair_id']
+    if data['token_pair_id'] < curr_token_pair_id:
+        response = jsonify({'message': 'Refresh token has been already used'})
+        response.status_code = 403
+        return response
+    elif data['token_pair_id'] > curr_token_pair_id:
+        response = jsonify({'message': 'Refresh token is invalid.'})
+        response.status_code = 403
+        return response
+
     #if we get here refresh token is valid
 
-    token = jwt.encode({
-        'user': username,
-        'exp': datetime.datetime.utcnow() +
-                datetime.timedelta(minutes=app.config['TOKEN_EXP_TIME'])
-        }, app.config['SECRET_KEY'])
-    refresh_token = jwt.encode({
-        'user': username,
-        'exp': datetime.datetime.utcnow() +
-                datetime.timedelta(minutes=app.config['REFRESH_TOKEN_EXP_TIME'])
-        }, app.config['REFRESH_SECRET_KEY'])
-    return jsonify({'token': token.decode('UTF-8'),
-                    'refresh token': refresh_token.decode('UTF-8')})
+    db.tododb.update_one({"username": username}, {'$inc': {'token_pair_id': 1}})
 
-@app.route('/validate_token')
+    token = jwt.encode(
+            {
+            'user': username,
+            'exp': datetime.datetime.utcnow() +
+                    datetime.timedelta(minutes=app.config['TOKEN_EXP_TIME']),
+            'token_pair_id': curr_token_pair_id + 1
+            },
+            app.config['SECRET_KEY']
+        )
+    refresh_token = jwt.encode(
+            {
+                'user': username,
+                'exp': datetime.datetime.utcnow() +
+                        datetime.timedelta(minutes=app.config['REFRESH_TOKEN_EXP_TIME']),
+                'token_pair_id': curr_token_pair_id + 1
+            },
+            app.config['REFRESH_SECRET_KEY']
+        )
+
+    return jsonify(
+        {
+            'token': token.decode('UTF-8'),
+            'refresh_token': refresh_token.decode('UTF-8')
+        })
+
+@app.route('/validate_token', methods=['POST'])
+@token_required
 def validate_token():
-    token = request.args.get('token')
-
-    if not token:
-        response = jsonify({'message': 'Token is missing'})
-        response.status_code = 403
-        return response
-    
-    try:
-        data = jwt.decode(token, app.config['SECRET_KEY'])
-    except:
-        response = jsonify({'message': 'Token is invalid'})
-        response.status_code = 403
-        return response
     
     return jsonify({'message': 'Token is valid'})
 
@@ -181,17 +265,17 @@ class OnlineStore(Resource):
         
         view_items_info = request.get_json()
 
-        if view_items_info is None:
-            _items = db.tododb.find({"category": {"$exists": True}})
-            items = [item for item in _items]
-            return jsonify(items)
-        
-        else:
-            view_item_id = view_items_info["id"]
+        if 'id' in view_items_info:
+            view_item_id = view_items_info['id']
             searched_item = db.tododb.find_one({"_id": view_item_id})
             if searched_item == None:
                 return {"There is no item with id" : view_item_id}
             return jsonify(searched_item)
+
+        else:
+            _items = db.tododb.find({"category": {"$exists": True}})
+            items = [item for item in _items]
+            return jsonify(items)
 
     def post(self):
         global next_id

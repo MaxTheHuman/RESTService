@@ -1,0 +1,834 @@
+{
+	"info": {
+		"_postman_id": "5e2a9919-b5d4-4881-80b9-819ffa83bfa0",
+		"name": "hw3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "show all items unlogged",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add item unlogged",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Mitsubishi\", \"category\":\"cars\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modify item unlogged",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":1, \"name\":\"Mitsubishi\", \"category\":\"bicycles\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete item unlogged",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":1}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "show all items",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth incorrect user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"max\", \"password\":\"pass\"}"
+				},
+				"url": {
+					"raw": "127.0.0.1:5000/auth",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"auth"
+					]
+				},
+				"description": "should return error message \"Register first\""
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"max\", \"password\":\"max\"}"
+				},
+				"url": {
+					"raw": "127.0.0.1:5000/register",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"register"
+					]
+				},
+				"description": "shoud get message \"User registered\", an item added to db with given username and password"
+			},
+			"response": []
+		},
+		{
+			"name": "auth user with incorrect password",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"max\", \"password\":\"incorrect_password\"}"
+				},
+				"url": {
+					"raw": "127.0.0.1:5000/auth",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"auth"
+					]
+				},
+				"description": "should return error message \"Incorrect password\""
+			},
+			"response": []
+		},
+		{
+			"name": "try to register same username with new password",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"max\", \"password\":\"new_pass\"}"
+				},
+				"url": {
+					"raw": ""
+				},
+				"description": "should return error message \"user with this username is already registered\""
+			},
+			"response": []
+		},
+		{
+			"name": "auth correct user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"max\", \"password\":\"max\"}"
+				},
+				"url": {
+					"raw": "127.0.0.1:5000/auth",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"auth"
+					]
+				},
+				"description": "should return token and refresh token"
+			},
+			"response": []
+		},
+		{
+			"name": "add item",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Dell\", \"category\":\"laptop\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add item 2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Mitsubishi\", \"category\":\"cars\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add item 3",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Beats\", \"category\":\"headphones\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "show all items again",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modify item 2",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"_id\":3, name\":\"Mitsubishi\", \"category\":\"bicycles\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "show item 2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\": 3}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete item 2",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":3}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "show all items once more",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5000?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "validate token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:5000/validate_token?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"validate_token"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				},
+				"description": "should return token and refresh token"
+			},
+			"response": []
+		},
+		{
+			"name": "try to validate incorrect token",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "127.0.0.1:5000/validate_token?token=incorret_token",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"validate_token"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "incorret_token"
+						}
+					]
+				},
+				"description": "should return error message \"Token is invalid\""
+			},
+			"response": []
+		},
+		{
+			"name": "refresh token",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "127.0.0.1:5000/refresh_token?token=refresh_token",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"refresh_token"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "refresh_token"
+						}
+					]
+				},
+				"description": "should return new pair token/refresh token"
+			},
+			"response": []
+		},
+		{
+			"name": "try to refresh token woth incorrect token",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "127.0.0.1:5000/refresh_token?token=refresh_token",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"refresh_token"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "refresh_token"
+						}
+					]
+				},
+				"description": "should return error message \"Refresh token is invalid. Reauthorize.\""
+			},
+			"response": []
+		},
+		{
+			"name": "validate new token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:5000/validate_token?token=token_got",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"validate_token"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "token_got"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
